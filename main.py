@@ -1,59 +1,43 @@
 #!/usr/bin/env python3
-"""THE MORNING LEDGER — NI24 entry program, Akun 14 (@namanyasiapa65237).
+"""Carrier for THE FIRST EDITION (News Image, 24 November 2026).
 
-Copies the pre-rendered entry.png (drawn in code by compose.py in this
-same repository, during this same session) to the output directory.
-Standard library only; no network; deterministic: the same bytes out
-on every run.
+Stdlib-only: reads entry.png from this directory, verifies the bounty
+gates (PNG, exactly 1024x1024, at most 1 MiB), then writes the image
+bytes to stdout unchanged.
 """
-import hashlib
 import os
-import shutil
 import struct
 import sys
 
-ENTRY = "entry.png"
-MAX_BYTES = 1048576
-WANT_W = 1024
-WANT_H = 1024
+MAX_BYTES = 1024 * 1024
+EXPECTED_W = 1024
+EXPECTED_H = 1024
 
 
-def png_size(path):
-    """Read width/height straight from the PNG IHDR header."""
-    with open(path, "rb") as f:
-        head = f.read(33)
-    if len(head) < 33 or head[:8] != b"\x89PNG\r\n\x1a\n":
+def png_dimensions(data):
+    if len(data) < 24 or data[:8] != b"\x89PNG\r\n\x1a\n":
         raise ValueError("entry.png is not a PNG file")
-    if head[12:16] != b"IHDR":
-        raise ValueError("entry.png has no IHDR chunk where expected")
-    width, height = struct.unpack(">II", head[16:24])
+    if data[12:16] != b"IHDR":
+        raise ValueError("entry.png is missing its IHDR chunk")
+    width, height = struct.unpack(">II", data[16:24])
     return width, height
 
 
 def main():
     here = os.path.dirname(os.path.abspath(__file__))
-    src = os.path.join(here, ENTRY)
-    out_dir = os.environ.get("MAKEFUN_OUTPUT_DIR") or "/output"
-    os.makedirs(out_dir, exist_ok=True)
-    dst = os.path.join(out_dir, ENTRY)
-
-    size = os.path.getsize(src)
-    if size > MAX_BYTES:
-        print(f"gate: entry.png is {size} bytes, over the 1 MiB cap", file=sys.stderr)
-        return 1
-    width, height = png_size(src)
-    if (width, height) != (WANT_W, WANT_H):
-        print(f"gate: entry.png is {width}x{height}, must be 1024x1024", file=sys.stderr)
-        return 1
-
-    shutil.copyfile(src, dst)
-    # Prove the copy is exact: same bytes in, same bytes out, every run.
-    digest_src = hashlib.sha256(open(src, "rb").read()).hexdigest()
-    digest_dst = hashlib.sha256(open(dst, "rb").read()).hexdigest()
-    if digest_src != digest_dst:
-        print("gate: copied bytes differ from entry.png", file=sys.stderr)
-        return 1
-    print(f"wrote {dst} ({size} bytes, {width}x{height}, sha256 {digest_src[:16]}...)")
+    path = os.path.join(here, "entry.png")
+    with open(path, "rb") as fh:
+        data = fh.read()
+    if len(data) > MAX_BYTES:
+        raise ValueError("entry.png exceeds the 1 MiB gate: %d bytes" % len(data))
+    width, height = png_dimensions(data)
+    if (width, height) != (EXPECTED_W, EXPECTED_H):
+        raise ValueError(
+            "entry.png must be %dx%d, got %dx%d"
+            % (EXPECTED_W, EXPECTED_H, width, height)
+        )
+    sys.stdout.buffer.write(data)
+    sys.stdout.buffer.flush()
     return 0
 
 

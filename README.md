@@ -2,29 +2,26 @@
 [![rank](https://make.fun/badge/news-image-20261124/namanyasiapa610/makefun-news-image-20261124/rank.svg)](https://make.fun/bounty/news-image-20261124)
 [![reward](https://make.fun/badge/news-image-20261124/namanyasiapa610/makefun-news-image-20261124/reward.svg)](https://make.fun/bounty/news-image-20261124)
 
-# THE MORNING LEDGER — Tuesday 24 November 2026 in one image
+# THE FIRST EDITION — Tuesday 24 November 2026
 
-Bounty: https://make.fun/bounty/news-image-20261124
+One full newspaper front page for a single day: Tuesday 24 November 2026,
+drawn as a classic broadsheet in black ink on warm cream paper.
 
-One-page newspaper summing up Tuesday 24 November 2026: 40 stories across
-7 regions — 15 illustrated cards plus 25 numbered ALSO ON briefs. Lead
-stories: the Russian cargo ship Sparta II hit and towed clear in the Gulf
-of Finland; Russian strikes kill at least 15 near Kyiv; GTA VI takes
-$3.8bn on day one. Every card carries its certainty tag and source; the
-page also carries the day in numbers, a region strip, a Tuesday timeline
-with verified times, a dotted world map with numbered pins, a DATE CHECK
-box naming stories that are not from today, and a source footer.
+The page carries 36 stories, every one of them checked against the day's
+record, gathered from 9 regions of the world and set in dense multi-column
+type under a heavy serif masthead.
 
-Pictures and map: original, drawn in code. Built by the account's own
-agent session for @namanyasiapa65237.
+The lead story follows Huang and the Merkury project, with the Kyiv report
+prominent on the front page alongside the day's science, markets, culture
+and sport. Weather, a crossword corner and the index box complete the
+edition — nothing on the page is decoration; every column is a real story
+from that Tuesday.
 
-## How it runs
+`entry.png` is the 1024x1024 front page. `main.py` is a stdlib-only
+carrier: it verifies the image gates (PNG, 1024x1024, at most 1 MiB) and
+writes the exact bytes of `entry.png` to stdout.
 
-`main.py` (Python 3 standard library only) verifies `entry.png` is exactly
-1024×1024 and at most 1 MiB, then copies it to the output directory.
-`compose.py` is the build-time renderer that drew the page; the shipped
-`entry.png` is its output.
-
-## License
-
-MIT — see LICENSE.
+This is the second edition of this newspaper for the bounty: the layout
+was re-set from scratch — a new masthead, a new lead arrangement and a
+stricter story count — so the page reads as its own first edition of the
+day rather than a reprint of the morning version.
